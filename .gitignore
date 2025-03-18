@@ -1,21 +1,12 @@
-# Ignore virtual environment
-venv/
+# Ignore video and model files
+*.avi
+*.pth
 
-# Ignore compiled Python files
+# VS Code and Python cache
+.vscode/
 __pycache__/
 *.pyc
 
-# Ignore database files
-*.db
-*.sqlite3
-
-# Ignore environment variables
-.env
-
-# Ignore system files
+# OS junk
 .DS_Store
 Thumbs.db
-
-# Optional: ignore figures or large data (if not needed)
-data/
-figures/
