@@ -1,0 +1,25 @@
+Model: scene_classifier_efficientnet_20250318_151927
+Overall Accuracy: 0.5854
+Test Loss: 1.0083
+
+Per-Class Metrics:
+Normal:
+  Precision: 0.8824
+  Recall:    0.6522
+  F1-Score:  0.7500
+
+Violence:
+  Precision: 0.0909
+  Recall:    0.0833
+  F1-Score:  0.0870
+
+Weaponized:
+  Precision: 0.4595
+  Recall:    0.7083
+  F1-Score:  0.5574
+
+Confusion Matrix:
+                Normal   Violence Weaponized
+Normal            30          6         10
+Violence           1          1         10
+Weaponized         3          4         17

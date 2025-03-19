@@ -1,0 +1,13 @@
+# Ignore video and model files
+*.avi
+*.mp4
+*.pth
+
+# VS Code and Python cache
+.vscode/
+_pycache_/
+*.pyc
+
+# OS junk
+.DS_Store
+Thumbs.db
