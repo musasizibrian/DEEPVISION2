@@ -2,6 +2,7 @@
 *.avi
 *.mp4
 *.pth
+*.env
 
 # VS Code and Python cache
 .vscode/

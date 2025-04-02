@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>All Cameras - DeepVision Monitoring Center</title>
     <style>
+        /* --- Styles from File 1 (Layout) --- */
         :root {
-            --primary: #2563eb;
+            --primary: #2563eb; /* Adjusted primary color for consistency */
             --primary-dark: #1d4ed8;
             --danger: #dc2626;
             --warning: #f59e0b;
@@ -67,42 +68,15 @@
             gap: 1rem;
         }
 
-        .user-badge {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            background-color: #f8fafc;
-            padding: 0.5rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.875rem;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .user-badge:hover {
-            background-color: #f1f5f9;
-        }
-
-        .avatar {
-            width: 28px;
-            height: 28px;
-            background-color: var(--primary);
-            border-radius: 50%;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 0.875rem;
-        }
-
-        button {
+        button, .btn-primary { /* Combine button styles */
             padding: 0.5rem 1rem;
             border: none;
             border-radius: 0.375rem;
             cursor: pointer;
             font-weight: 500;
             transition: all 0.2s;
+            text-decoration: none; /* For the anchor tag logout */
+            display: inline-block; /* For the anchor tag logout */
         }
 
         .btn-primary {
@@ -114,20 +88,12 @@
             background-color: var(--primary-dark);
         }
 
-        .btn-outline {
-            background-color: transparent;
-            border: 1px solid var(--border);
-        }
-
-        .btn-outline:hover {
-            background-color: #f1f5f9;
-        }
-
         /* Sidebar */
         .sidebar {
             background-color: white;
             border-right: 1px solid var(--border);
             padding: 1.5rem 1rem;
+            grid-row: 2; /* Ensure sidebar is below header */
         }
 
         .nav-title {
@@ -161,6 +127,12 @@
             transition: all 0.2s;
         }
 
+        .nav-link svg { /* Ensure icons size correctly */
+             width: 18px;
+             height: 18px;
+             flex-shrink: 0; /* Prevent icons from shrinking */
+         }
+
         .nav-link:hover,
         .nav-link.active {
             background-color: #f1f5f9;
@@ -174,6 +146,8 @@
         /* Main Content */
         main {
             padding: 1.5rem;
+            grid-column: 2; /* Ensure main content is beside sidebar */
+            grid-row: 2;    /* Ensure main content is below header */
         }
 
         .page-title {
@@ -182,72 +156,7 @@
             margin-bottom: 1.5rem;
         }
 
-        /* Alerts specific styles */
-        .alert-list {
-            list-style: none;
-            padding: 0;
-        }
-
-        .alert-item {
-            background-color: white;
-            border-radius: 0.5rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            margin-bottom: 1rem;
-            padding: 1rem;
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 1rem;
-            align-items: center;
-        }
-
-        .alert-details {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .alert-title {
-            font-weight: 600;
-            margin-bottom: 0.25rem;
-        }
-
-        .alert-location {
-            color: var(--gray);
-            font-size: 0.875rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .alert-timestamp {
-            color: var(--gray);
-            font-size: 0.75rem;
-        }
-
-        .alert-severity {
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: white;
-            display: inline-block; /* So width is only as big as its content */
-        }
-
-        .alert-severity.high {
-            background-color: var(--danger);
-        }
-
-        .alert-severity.medium {
-            background-color: var(--warning);
-        }
-
-        .alert-severity.low {
-            background-color: var(--success);
-        }
-
-        .alert-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-         .camera-grid {
+        .camera-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 1.5rem;
@@ -257,39 +166,39 @@
             border-radius: 8px;
             overflow: hidden;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            display: flex; /* Use flex for better structure */
+            flex-direction: column;
         }
         .camera-feed {
-            background-color: #1a1f2e;
+            background-color: #1a1f2e; /* Dark background for feed area */
             height: 180px;
             position: relative;
+            display: flex; /* Center potential error messages */
+            align-items: center;
+            justify-content: center;
+            color: var(--gray); /* Default text color for feed */
+        }
+        .live-indicator, .offline-indicator { /* Combined common styles */
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: white;
+            border-radius: 4px;
+            padding: 0.2rem 0.5rem;
+            font-size: 0.7rem;
+            font-weight: 600;
         }
         .live-indicator {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: #0fcc45;
-            color: white;
-            border-radius: 4px;
-            padding: 0.2rem 0.5rem;
-            font-size: 0.7rem;
-            font-weight: 600;
+            background-color: var(--success); /* Use theme color */
         }
         .offline-indicator {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: #cc3e3e;
-            color: white;
-            border-radius: 4px;
-            padding: 0.2rem 0.5rem;
-            font-size: 0.7rem;
-            font-weight: 600;
+            background-color: var(--danger); /* Use theme color */
         }
         .suspicious-activity {
             position: absolute;
             bottom: 10px;
             left: 10px;
-            background-color: #ff3b3b;
+            background-color: var(--warning); /* Use theme color */
             color: white;
             border-radius: 4px;
             padding: 0.2rem 0.5rem;
@@ -298,40 +207,46 @@
         }
         .camera-info {
             padding: 1rem;
+            flex-grow: 1; /* Allow info to take available space */
         }
         .camera-title {
             font-size: 1rem;
             font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: #333;
+            margin-bottom: 0.25rem; /* Reduced margin */
+            color: var(--dark);
         }
         .camera-location {
-            font-size: 0.9rem;
-            color: #6b6b6b;
+            font-size: 0.875rem; /* Slightly smaller */
+            color: var(--gray);
         }
         .camera-controls {
             display: flex;
             padding: 0.5rem 1rem;
-            border-top: 1px solid #f0f0f0;
+            border-top: 1px solid var(--border);
+            background-color: var(--light); /* Slight background tint */
         }
         .control-btn {
             background-color: transparent;
             border: none;
-            color: #4a4a4a;
+            color: var(--gray);
             padding: 0.5rem;
             cursor: pointer;
             display: flex;
             align-items: center;
             margin-right: 0.5rem;
+            font-size: 0.8rem; /* Smaller icons/text */
+            transition: color 0.2s;
         }
         .control-btn:hover {
-            color: #3366cc;
+            color: var(--primary); /* Use theme color on hover */
         }
         .filter-bar {
             display: flex;
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1.5rem;
+            gap: 1rem; /* Add gap between items */
         }
         .search-bar {
             display: flex;
@@ -339,37 +254,146 @@
             background-color: white;
             border-radius: 4px;
             padding: 0.5rem 1rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            width: 300px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+            /* width: 300px; Removed fixed width */
+            flex-grow: 1; /* Allow search to grow */
+            min-width: 200px; /* Minimum width */
+        }
+        .search-bar span { /* Style search icon */
+            color: var(--gray);
+            margin-right: 0.5rem;
         }
         .search-bar input {
             border: none;
             outline: none;
-            padding: 0.2rem 0.5rem;
             flex-grow: 1;
+            font-size: 0.875rem;
         }
         .filter-buttons {
             display: flex;
+            flex-wrap: wrap; /* Allow buttons to wrap */
+            gap: 0.5rem; /* Add gap between buttons */
         }
         .filter-btn {
             background-color: white;
-            border: 1px solid #e0e0e0;
+            border: 1px solid var(--border);
             border-radius: 4px;
             padding: 0.5rem 1rem;
-            margin-left: 0.5rem;
+            /* margin-left: 0.5rem; Replaced by gap */
             cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s;
         }
+        .filter-btn:hover {
+             border-color: var(--primary);
+             color: var(--primary);
+         }
         .filter-btn.active {
-            background-color: #3366cc;
+            background-color: var(--primary);
             color: white;
-            border-color: #3366cc;
+            border-color: var(--primary);
         }
+
+        /* --- Styles from File 2 (Modal) --- */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            overflow-y: auto; /* Allow scrolling if content overflows */
+        }
+        .modal-content {
+            background-color: #1e293b; /* Dark background for modal */
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%; /* Responsive width */
+            max-width: 900px;
+            position: relative;
+            color: var(--light); /* Light text in modal */
+        }
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            color: var(--gray);
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+             transition: color 0.2s;
+        }
+         .close-modal:hover {
+             color: var(--light);
+         }
+        .fullscreen-feed {
+            width: 100%;
+            /* height: 500px; Let aspect ratio control height */
+            aspect-ratio: 16 / 9; /* Common video aspect ratio */
+            background-color: black;
+            margin-bottom: 15px;
+            position: relative; /* For potential overlays */
+        }
+         #fullscreenVideo { /* Ensure video fills container */
+             display: block; /* Remove extra space below video */
+             width: 100%;
+             height: 100%;
+             object-fit: contain; /* Fit video within bounds */
+         }
+        .modal-controls {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap; /* Allow controls to wrap */
+            gap: 10px; /* Spacing for controls */
+        }
+        .modal-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.875rem;
+            background-color: var(--gray); /* Default modal button */
+            color: white;
+             transition: background-color 0.2s;
+        }
+        .modal-btn:hover {
+             opacity: 0.9;
+         }
+        .modal-btn.primary {
+            background-color: var(--primary);
+        }
+        .modal-btn.danger {
+            background-color: var(--danger);
+        }
+        .camera-selector {
+            margin-top: 15px;
+            text-align: center; /* Center selector */
+            color: var(--light);
+            font-size: 0.875rem;
+        }
+         #videoSource { /* Style the select dropdown */
+             margin-left: 5px;
+             padding: 5px;
+             border-radius: 4px;
+             border: 1px solid var(--gray);
+             background-color: var(--dark);
+             color: var(--light);
+         }
+         #fullscreenCanvas {
+             display: none; /* Canvas hidden by default */
+         }
     </style>
 </head>
 <body>
 <div class="container">
     <header>
       <div class="logo">
+        <!-- SVG Logo -->
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"></path>
           <path d="M19 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"></path>
@@ -382,69 +406,46 @@
         <span>DeepVision Monitoring Center</span>
       </div>
       <div class="user-controls">
-        <!-- Removed User Badge  -->
-        <a href="{{ url_for('logout') }}" class="btn-primary">Logout</a> <!-- Changed to a link for proper navigation -->
+        <!-- Link styled as a button -->
+        <a href="{{ url_for('logout') }}" class="btn-primary">Logout</a>
       </div>
     </header>
 
     <div class="sidebar">
         <h3 class="nav-title">Navigation</h3>
         <ul class="nav-list">
+             <!-- Dashboard Link -->
             <li class="nav-item">
                 <a href="{{ url_for('dashboard') }}" class="nav-link">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
                     Dashboard
                 </a>
             </li>
+             <!-- All Cameras Link (Active) -->
             <li class="nav-item">
                 <a href="{{ url_for('cameras') }}" class="nav-link active">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
-                        <line x1="7" y1="2" x2="7" y2="22"></line>
-                        <line x1="17" y1="2" x2="17" y2="22"></line>
-                        <line x1="2" y1="12" x2="22" y2="12"></line>
-                        <line x1="2" y1="7" x2="7" y2="7"></line>
-                        <line x1="2" y1="17" x2="7" y2="17"></line>
-                        <line x1="17" y1="17" x2="22" y2="17"></line>
-                        <line x1="17" y1="7" x2="22" y2="7"></line>
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg>
                     All Cameras
                 </a>
             </li>
+             <!-- Alerts Link -->
             <li class="nav-item">
                 <a href="{{ url_for('alerts') }}" class="nav-link">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                    </svg>
+                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                     Alerts
                 </a>
             </li>
+             <!-- Events Link -->
             <li class="nav-item">
                 <a href="{{ url_for('events_page') }}" class="nav-link">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                        <line x1="16" y1="2" x2="16" y2="6"></line>
-                        <line x1="8" y1="2" x2="8" y2="6"></line>
-                        <line x1="3" y1="10" x2="21" y2="10"></line>
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
                     Events
                 </a>
             </li>
+             <!-- Reports Link -->
              <li class="nav-item">
                 <a href="{{ url_for('reports') }}" class="nav-link">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="12" y1="16" x2="12" y2="12"></line>
-                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                     Reports
                 </a>
             </li>
@@ -452,31 +453,24 @@
 
         <h3 class="nav-title">System</h3>
       <ul class="nav-list">
+         <!-- Settings Link -->
         <li class="nav-item">
           <a href="{{ url_for('settings') }}" class="nav-link">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="3"></circle>
-              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
             Settings
           </a>
         </li>
+         <!-- User Management Link -->
         <li class="nav-item">
           <a href="{{ url_for('user_management') }}" class="nav-link">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-              <circle cx="9" cy="7" r="4"></circle>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
             User Management
           </a>
         </li>
+         <!-- System Status Link -->
         <li class="nav-item">
           <a href="{{ url_for('system_status') }}" class="nav-link">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
             System Status
           </a>
         </li>
@@ -489,139 +483,512 @@
         <div class="filter-bar">
             <div class="search-bar">
                 <span>🔍</span>
-                <input type="text" placeholder="Search cameras...">
+                <input type="text" id="cameraSearch" placeholder="Search cameras...">
             </div>
             <div class="filter-buttons">
-                <button class="filter-btn active">All (8)</button>
-                <button class="filter-btn">Live (6)</button>
-                <button class="filter-btn">Offline (2)</button>
-                <button class="filter-btn">Alerts (1)</button>
+                <!-- Counts will be updated by JS if needed, initial values are placeholders -->
+                <button class="filter-btn active" data-filter="all">All (8)</button>
+                <button class="filter-btn" data-filter="live">Live (6)</button>
+                <button class="filter-btn" data-filter="offline">Offline (2)</button>
+                <button class="filter-btn" data-filter="alert">Alerts (1)</button>
             </div>
         </div>
 
-        <div class="camera-grid">
-            <div class="camera-card">
-                <div class="camera-feed">
-                    <div class="live-indicator">LIVE</div>
-                </div>
-                <div class="camera-info">
-                    <div class="camera-title">Camera 1</div>
-                    <div class="camera-location">City Hall Main Entrance</div>
-                </div>
-                <div class="camera-controls">
-                    <button class="control-btn">👁️ View</button>
-                    <button class="control-btn">📝 Edit</button>
-                    <button class="control-btn">📊 Stats</button>
-                </div>
-            </div>
-
-            <div class="camera-card">
-                <div class="camera-feed">
-                    <div class="live-indicator">LIVE</div>
-                    <div class="suspicious-activity">Suspicious Activity</div>
-                </div>
-                <div class="camera-info">
-                    <div class="camera-title">Camera 2</div>
-                    <div class="camera-location">Kampala Road Camera 1</div>
-                </div>
-                <div class="camera-controls">
-                    <button class="control-btn">👁️ View</button>
-                    <button class="control-btn">📝 Edit</button>
-                    <button class="control-btn">📊 Stats</button>
-                </div>
-            </div>
-
-            <div class="camera-card">
-                <div class="camera-feed">
-                    <div class="live-indicator">LIVE</div>
-                </div>
-                <div class="camera-info">
-                    <div class="camera-title">Camera 3</div>
-                    <div class="camera-location">Nakasero Roundabout</div>
-                </div>
-                <div class="camera-controls">
-                    <button class="control-btn">👁️ View</button>
-                    <button class="control-btn">📝 Edit</button>
-                    <button class="control-btn">📊 Stats</button>
-                </div>
-            </div>
-
-            <div class="camera-card">
-                <div class="camera-feed">
-                    <div class="live-indicator">LIVE</div>
-                </div>
-                <div class="camera-info">
-                    <div class="camera-title">Camera 4</div>
-                    <div class="camera-location">Kampala Road Camera 2</div>
-                </div>
-                <div class="camera-controls">
-                    <button class="control-btn">👁️ View</button>
-                    <button class="control-btn">📝 Edit</button>
-                    <button class="control-btn">📊 Stats</button>
-                </div>
-            </div>
-
-            <div class="camera-card">
-                <div class="camera-feed">
-                    <div class="live-indicator">LIVE</div>
-                </div>
-                <div class="camera-info">
-                    <div class="camera-title">Camera 5</div>
-                    <div class="camera-location">Central Police Station</div>
-                </div>
-                <div class="camera-controls">
-                    <button class="control-btn">👁️ View</button>
-                    <button class="control-btn">📝 Edit</button>
-                    <button class="control-btn">📊 Stats</button>
-                </div>
-            </div>
-
-            <div class="camera-card">
-                <div class="camera-feed">
-                    <div class="live-indicator">LIVE</div>
-                </div>
-                <div class="camera-info">
-                    <div class="camera-title">Camera 6</div>
-                    <div class="camera-location">Centenary Bank Entrance</div>
-                </div>
-                <div class="camera-controls">
-                    <button class="control-btn">👁️ View</button>
-                    <button class="control-btn">📝 Edit</button>
-                    <button class="control-btn">📊 Stats</button>
-                </div>
-            </div>
-
-            <div class="camera-card">
-                <div class="camera-feed">
-                    <div class="offline-indicator">OFFLINE</div>
-                </div>
-                <div class="camera-info">
-                    <div class="camera-title">Camera 7</div>
-                    <div class="camera-location">Nakasero Market</div>
-                </div>
-                <div class="camera-controls">
-                    <button class="control-btn">👁️ View</button>
-                    <button class="control-btn">📝 Edit</button>
-                    <button class="control-btn">📊 Stats</button>
-                </div>
-            </div>
-
-            <div class="camera-card">
-                <div class="camera-feed">
-                    <div class="offline-indicator">OFFLINE</div>
-                </div>
-                <div class="camera-info">
-                    <div class="camera-title">Camera 8</div>
-                    <div class="camera-location">Parliament Avenue</div>
-                </div>
-                <div class="camera-controls">
-                    <button class="control-btn">👁️ View</button>
-                    <button class="control-btn">📝 Edit</button>
-                    <button class="control-btn">📊 Stats</button>
-                </div>
-            </div>
+        <!-- Camera grid will be populated by JavaScript -->
+        <div class="camera-grid" id="cameraGrid">
+             <p style="color: var(--gray);">Loading cameras...</p>
         </div>
     </main>
+</div> <!-- End .container -->
+
+<!-- Camera Modal -->
+<div id="cameraModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeModal()">×</span>
+        <div class="fullscreen-feed">
+             <!-- Video element for the modal -->
+            <video id="fullscreenVideo" autoplay playsinline muted></video>
+            <!-- Canvas for snapshots -->
+            <canvas id="fullscreenCanvas"></canvas>
+        </div>
+        <div class="modal-controls">
+            <button class="modal-btn primary" onclick="takeSnapshot()">📸 Snapshot</button>
+            <button class="modal-btn" onclick="toggleRecording()" id="recordBtn">⏺️ Record</button>
+            <button class="modal-btn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
+        </div>
+         <!-- Dropdown for camera selection -->
+        <div class="camera-selector" id="cameraSelectorContainer" style="display: none;"> <!-- Hidden initially -->
+            <label for="videoSource">Select Camera: </label>
+            <select id="videoSource"></select>
+        </div>
+    </div>
 </div>
+
+<script>
+    // --- JavaScript from File 2 (with minor adjustments) ---
+
+    // Static Camera data (Replace with dynamic data from Flask/API later)
+    const cameras = [
+        { id: 1, title: "Camera 1 (Webcam)", location: "Your Laptop", status: "live", alert: false, type: "webcam" }, // Indicate webcam type
+        { id: 2, title: "Camera 2", location: "Kampala Road Camera 1", status: "live", alert: true, type: "ip" },
+        { id: 3, title: "Camera 3", location: "Nakasero Roundabout", status: "live", alert: false, type: "ip" },
+        { id: 4, title: "Camera 4", location: "Kampala Road Camera 2", status: "live", alert: false, type: "ip" },
+        { id: 5, title: "Camera 5", location: "Central Police Station", status: "live", alert: false, type: "ip" },
+        { id: 6, title: "Camera 6", location: "Centenary Bank Entrance", status: "live", alert: false, type: "ip" },
+        { id: 7, title: "Camera 7", location: "Nakasero Market", status: "offline", alert: false, type: "ip" },
+        { id: 8, title: "Camera 8", location: "Parliament Avenue", status: "offline", alert: false, type: "ip" }
+    ];
+
+    // DOM Elements
+    const cameraGrid = document.getElementById('cameraGrid');
+    const cameraSearch = document.getElementById('cameraSearch');
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const cameraModal = document.getElementById('cameraModal');
+    const fullscreenVideo = document.getElementById('fullscreenVideo');
+    const fullscreenCanvas = document.getElementById('fullscreenCanvas');
+    const recordBtn = document.getElementById('recordBtn');
+    const videoSourceSelect = document.getElementById('videoSource');
+    const cameraSelectorContainer = document.getElementById('cameraSelectorContainer');
+
+
+    // State variables
+    let currentCamera = null;
+    let mediaStream = null;
+    let mediaRecorder = null;
+    let recordedChunks = [];
+    let isRecording = false;
+    let availableDevices = [];
+    let currentFilter = 'all'; // Track the active filter
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', function() {
+        renderCameraGrid(cameras); // Initial render
+        setupEventListeners();
+        updateFilterCounts(); // Update counts based on initial data
+    });
+
+    // Render camera grid
+    function renderCameraGrid(camerasToRender) {
+        cameraGrid.innerHTML = ''; // Clear existing grid
+
+        if (camerasToRender.length === 0) {
+            cameraGrid.innerHTML = '<p style="color: var(--gray); grid-column: 1 / -1; text-align: center;">No cameras match the current filter.</p>';
+            return;
+        }
+
+        camerasToRender.forEach(camera => {
+            const card = document.createElement('div');
+            card.className = 'camera-card';
+            // Add data attributes for filtering
+            card.dataset.id = camera.id;
+            card.dataset.status = camera.status;
+            card.dataset.alert = camera.alert;
+            card.dataset.title = camera.title.toLowerCase();
+            card.dataset.location = camera.location.toLowerCase();
+
+            // Determine feed content (placeholder for non-webcam)
+             let feedContent = '';
+             if (camera.status === 'live') {
+                 feedContent += `<div class="live-indicator">LIVE</div>`;
+                 // Placeholder for actual IP camera feed visualization later
+                 if (camera.type !== 'webcam') {
+                     feedContent += `<span style="font-size: 0.8em;">(IP Camera Feed)</span>`;
+                 }
+             } else {
+                 feedContent += `<div class="offline-indicator">OFFLINE</div>`;
+             }
+             if (camera.alert) {
+                 feedContent += `<div class="suspicious-activity">Suspicious Activity</div>`;
+             }
+
+
+            card.innerHTML = `
+                <div class="camera-feed">
+                    ${feedContent}
+                </div>
+                <div class="camera-info">
+                    <div class="camera-title">${camera.title}</div>
+                    <div class="camera-location">${camera.location}</div>
+                </div>
+                <div class="camera-controls">
+                     <!-- Only show View button for live cameras for now -->
+                    ${camera.status === 'live' ? `<button class="control-btn" onclick="viewCamera(${camera.id})">👁️ View</button>` : '<span style="font-size:0.8em; color: var(--gray); padding: 0.5rem;">Unavailable</span>'}
+                    <button class="control-btn" onclick="editCamera(${camera.id})">📝 Edit</button>
+                    <button class="control-btn" onclick="showStats(${camera.id})">📊 Stats</button>
+                </div>
+            `;
+
+            cameraGrid.appendChild(card);
+        });
+    }
+
+     // Update filter button counts
+     function updateFilterCounts() {
+         const liveCount = cameras.filter(c => c.status === 'live').length;
+         const offlineCount = cameras.filter(c => c.status === 'offline').length;
+         const alertCount = cameras.filter(c => c.alert === true).length;
+
+         document.querySelector('.filter-btn[data-filter="all"]').textContent = `All (${cameras.length})`;
+         document.querySelector('.filter-btn[data-filter="live"]').textContent = `Live (${liveCount})`;
+         document.querySelector('.filter-btn[data-filter="offline"]').textContent = `Offline (${offlineCount})`;
+         document.querySelector('.filter-btn[data-filter="alert"]').textContent = `Alerts (${alertCount})`;
+     }
+
+    // Filter cameras based on search and status
+    function applyFilters() {
+        const searchTerm = cameraSearch.value.toLowerCase().trim();
+        let filteredCameras = cameras;
+
+        // Apply status filter
+        if (currentFilter !== 'all') {
+            if (currentFilter === 'alert') {
+                filteredCameras = filteredCameras.filter(camera => camera.alert === true);
+            } else {
+                filteredCameras = filteredCameras.filter(camera => camera.status === currentFilter);
+            }
+        }
+
+        // Apply search term filter
+        if (searchTerm) {
+            filteredCameras = filteredCameras.filter(camera =>
+                camera.title.toLowerCase().includes(searchTerm) ||
+                camera.location.toLowerCase().includes(searchTerm)
+            );
+        }
+
+        renderCameraGrid(filteredCameras);
+    }
+
+
+    // Set up event listeners
+    function setupEventListeners() {
+        // Search input
+        cameraSearch.addEventListener('input', applyFilters);
+
+        // Filter buttons
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                filterButtons.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentFilter = this.dataset.filter; // Get filter type from data attribute
+                applyFilters(); // Re-apply filters
+            });
+        });
+
+        // Camera selection change
+        videoSourceSelect.addEventListener('change', () => {
+             if (currentCamera && currentCamera.type === 'webcam') {
+                 startWebcamStream(videoSourceSelect.value);
+             }
+        });
+    }
+
+
+    // --- Modal and Webcam Logic ---
+
+    // View Camera Function (Handles both webcam and placeholder for IP cam)
+    async function viewCamera(cameraId) {
+        currentCamera = cameras.find(c => c.id === cameraId);
+        if (!currentCamera || currentCamera.status !== 'live') {
+             console.warn("Cannot view offline or non-existent camera:", cameraId);
+             return; // Don't open modal for offline cameras
+         }
+
+        console.log("Viewing camera:", currentCamera.title);
+        cameraModal.style.display = 'block';
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+
+        // Reset modal state
+        fullscreenVideo.srcObject = null;
+        fullscreenVideo.poster = ''; // Clear any previous poster image
+        cameraSelectorContainer.style.display = 'none';
+        videoSourceSelect.innerHTML = ''; // Clear previous options
+
+        if (currentCamera.type === 'webcam') {
+            // Handle Webcam
+            try {
+                // Get available video devices first (need temporary grant)
+                await navigator.mediaDevices.getUserMedia({ video: true, audio: false }); // Request temporary access
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                availableDevices = devices.filter(device => device.kind === 'videoinput');
+                console.log("Available video devices:", availableDevices);
+
+                // Populate camera selector dropdown
+                if (availableDevices.length > 0) {
+                     availableDevices.forEach((device, i) => {
+                         const option = document.createElement('option');
+                         option.value = device.deviceId;
+                         option.text = device.label || `Camera ${i + 1}`;
+                         videoSourceSelect.appendChild(option);
+                     });
+                     // Show selector only if more than one camera or if needed
+                     cameraSelectorContainer.style.display = 'block';
+                     // Start with the first available camera
+                     startWebcamStream(availableDevices[0].deviceId);
+                } else {
+                     console.error("No video input devices found.");
+                     showModalError("No webcam found on this device.");
+                }
+
+            } catch (err) {
+                console.error('Error accessing or enumerating devices:', err);
+                showModalError(`Could not access webcam. Please ensure permissions are granted. Error: ${err.name}`);
+            }
+        } else {
+            // Handle IP Camera (Placeholder)
+             console.log("Displaying placeholder for IP Camera:", currentCamera.title);
+             showModalError(`Live feed for IP Camera (${currentCamera.title}) is not implemented yet.`);
+             // Hide webcam specific controls maybe?
+             cameraSelectorContainer.style.display = 'none';
+        }
+    }
+
+     // Function to display errors within the modal video area
+     function showModalError(message) {
+         fullscreenVideo.srcObject = null; // Ensure no stream is playing
+         // Create a message element instead of using poster
+         const errorDiv = document.createElement('div');
+         errorDiv.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--warning); background-color: black; padding: 1rem; text-align: center; font-size: 0.9em;';
+         errorDiv.textContent = message;
+         // Clear previous errors before adding new one
+         const existingError = fullscreenVideo.parentNode.querySelector('.modal-error-message');
+         if (existingError) existingError.remove();
+         errorDiv.classList.add('modal-error-message'); // Add class for potential removal
+         fullscreenVideo.parentNode.appendChild(errorDiv);
+     }
+
+      // Clear modal errors
+      function clearModalError() {
+          const existingError = fullscreenVideo.parentNode.querySelector('.modal-error-message');
+          if (existingError) existingError.remove();
+      }
+
+
+    // Start webcam stream specifically
+    async function startWebcamStream(deviceId) {
+        // Stop any existing stream first
+        if (mediaStream) {
+            mediaStream.getTracks().forEach(track => track.stop());
+            console.log("Stopped previous media stream.");
+        }
+        clearModalError(); // Clear any previous errors
+
+        const constraints = {
+            video: {
+                deviceId: deviceId ? { exact: deviceId } : undefined,
+                width: { ideal: 1280 }, // Request preferred resolution
+                height: { ideal: 720 }
+            },
+            audio: false // No audio for monitoring
+        };
+
+        console.log("Requesting webcam stream with constraints:", constraints);
+
+        try {
+            mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
+            console.log("Webcam stream obtained.");
+            fullscreenVideo.srcObject = mediaStream;
+            fullscreenVideo.muted = true; // Ensure muted for autoplay
+            fullscreenVideo.play().catch(e => console.error("Play error:", e)); // Explicit play just in case
+
+        } catch (err) {
+            console.error('Error starting specific webcam stream:', err);
+            fullscreenVideo.srcObject = null;
+            showModalError(`Failed to start selected camera. Error: ${err.name}`);
+        }
+    }
+
+    // Take snapshot
+    function takeSnapshot() {
+        if (!mediaStream || currentCamera.type !== 'webcam') {
+             alert("Snapshot only available for active webcam streams.");
+             return;
+         }
+
+        const video = fullscreenVideo;
+        const canvas = fullscreenCanvas;
+        const context = canvas.getContext('2d');
+
+        // Set canvas dimensions to video dimensions
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+
+        // Draw video frame onto canvas
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        // Create download link
+        const link = document.createElement('a');
+        link.download = `snapshot-${currentCamera.title.replace(/\s+/g, '_')}-${new Date().toISOString().split('T')[0]}.png`;
+        try {
+            link.href = canvas.toDataURL('image/png'); // Get data URL
+            link.click(); // Trigger download
+        } catch (e) {
+            console.error("Error creating snapshot data URL:", e);
+            alert("Failed to create snapshot.");
+        }
+    }
+
+    // Toggle video recording
+    function toggleRecording() {
+         if (!mediaStream || currentCamera.type !== 'webcam') {
+             alert("Recording only available for active webcam streams.");
+             return;
+         }
+
+        if (!isRecording) {
+            // Start recording
+            recordedChunks = [];
+            try {
+                // Check for supported MIME type
+                 const options = { mimeType: 'video/webm;codecs=vp8' };
+                 if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+                     console.warn(`${options.mimeType} not supported, trying default.`);
+                     delete options.mimeType; // Use browser default
+                 }
+                mediaRecorder = new MediaRecorder(mediaStream, options);
+
+                mediaRecorder.ondataavailable = function(e) {
+                    if (e.data.size > 0) {
+                        recordedChunks.push(e.data);
+                        console.log(`Recorded chunk size: ${e.data.size}`);
+                    }
+                };
+
+                mediaRecorder.onstop = function() {
+                    console.log("Recording stopped. Processing chunks:", recordedChunks.length);
+                    if (recordedChunks.length === 0) {
+                        console.warn("No data recorded.");
+                        alert("Recording failed or produced no data.");
+                        return;
+                    }
+                    const blob = new Blob(recordedChunks, { type: mediaRecorder.mimeType || 'video/webm' }); // Use the actual mimeType if available
+                    const url = URL.createObjectURL(blob);
+
+                    const link = document.createElement('a');
+                    const fileExtension = (mediaRecorder.mimeType && mediaRecorder.mimeType.includes('mp4')) ? 'mp4' : 'webm';
+                    link.download = `recording-${currentCamera.title.replace(/\s+/g, '_')}-${new Date().toISOString().split('T')[0]}.${fileExtension}`;
+                    link.href = url;
+                    link.click();
+
+                    // Clean up the object URL after download is triggered
+                    window.setTimeout(() => URL.revokeObjectURL(url), 100);
+
+                    // Reset button state after processing
+                    isRecording = false;
+                    recordBtn.textContent = '⏺️ Record';
+                    recordBtn.classList.remove('danger');
+                };
+
+                 mediaRecorder.onerror = (event) => {
+                    console.error('MediaRecorder error:', event.error);
+                    alert(`Recording error: ${event.error.name}`);
+                     // Reset button state on error
+                     isRecording = false;
+                     recordBtn.textContent = '⏺️ Record';
+                     recordBtn.classList.remove('danger');
+                 };
+
+                mediaRecorder.start(1000); // Record in chunks of 1 second
+                isRecording = true;
+                recordBtn.textContent = '⏹️ Stop Recording';
+                recordBtn.classList.add('danger');
+                console.log("Recording started with mimeType:", mediaRecorder.mimeType);
+
+            } catch (e) {
+                console.error("Error initializing MediaRecorder:", e);
+                alert("Could not start recording. Check browser compatibility or permissions.");
+                 isRecording = false; // Ensure state is reset
+            }
+
+        } else {
+            // Stop recording
+            if (mediaRecorder && mediaRecorder.state !== "inactive") {
+                 mediaRecorder.stop();
+                 // The actual download happens in the onstop handler
+                 console.log("Stop recording requested.");
+            } else {
+                 // Failsafe reset if recorder state is weird
+                 isRecording = false;
+                 recordBtn.textContent = '⏺️ Record';
+                 recordBtn.classList.remove('danger');
+                 console.warn("MediaRecorder was not active when stop was called.");
+            }
+        }
+    }
+
+    // Toggle fullscreen mode for the video element
+    function toggleFullscreen() {
+        const videoContainer = fullscreenVideo.parentNode; // Target the container for better control
+
+        if (!document.fullscreenElement) {
+            // Enter fullscreen
+             if (videoContainer.requestFullscreen) {
+                 videoContainer.requestFullscreen().catch(err => {
+                     console.error(`Error attempting to enable fullscreen: ${err.message} (${err.name})`);
+                     alert(`Fullscreen mode failed: ${err.message}`);
+                 });
+             } else {
+                 alert("Fullscreen mode is not supported by your browser.");
+             }
+        } else {
+            // Exit fullscreen
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+        }
+    }
+
+    // Close modal and clean up
+    function closeModal() {
+        cameraModal.style.display = 'none';
+        document.body.style.overflow = 'auto'; // Restore background scrolling
+        clearModalError(); // Clear any errors
+
+        // Stop recording if active
+        if (isRecording && mediaRecorder && mediaRecorder.state !== "inactive") {
+            try {
+                 mediaRecorder.stop(); // Stop recording cleanly
+                 console.log("Stopped recording on modal close.");
+            } catch (e) {
+                console.error("Error stopping recorder on close:", e);
+            }
+        }
+         // Reset recording button state regardless
+         isRecording = false;
+         recordBtn.textContent = '⏺️ Record';
+         recordBtn.classList.remove('danger');
+
+
+        // Stop all media tracks
+        if (mediaStream) {
+            mediaStream.getTracks().forEach(track => track.stop());
+            mediaStream = null;
+            console.log("Media stream stopped on modal close.");
+        }
+
+        // Reset state
+        fullscreenVideo.srcObject = null;
+        currentCamera = null;
+        availableDevices = [];
+        recordedChunks = [];
+    }
+
+    // --- Placeholder Functions ---
+
+    function editCamera(cameraId) {
+        const camera = cameras.find(c => c.id === cameraId);
+        if (!camera) return;
+        alert(`Editing ${camera.title}\n(Placeholder - Opens an edit form)`);
+        // In a real app, you'd likely open another modal or navigate to an edit page
+    }
+
+    function showStats(cameraId) {
+        const camera = cameras.find(c => c.id === cameraId);
+        if (!camera) return;
+        alert(`Showing stats for ${camera.title}\n(Placeholder - Displays detailed statistics)`);
+        // In a real app, you might show charts in a modal or a dedicated stats section
+    }
+
+</script>
 </body>
 </html>

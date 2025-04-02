@@ -9,3 +9,6 @@ kagglehub>=0.2.0
 matplotlib>=3.5.0
 pillow>=9.0.0
 flask>=2.0.0
+pip install pyotp
+pip install qrcode
+pip install Pillow  # Needed by qrcode

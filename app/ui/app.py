@@ -1,17 +1,20 @@
-from flask import Flask, render_template, jsonify, request, redirect, url_for, session, g
+from flask import Flask, render_template, jsonify, request, redirect, url_for, session, g, flash
 import os
 import json
 from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 import secrets
-import smtplib
 from flask_session import Session
 import mysql.connector  # Import the MySQL connector
-from email.mime.text import MIMEText
-#from supabase import create_client, Client #Remove
 import uuid #Use for reset tokens
 from dotenv import load_dotenv
+import re  # For password strength validation
+import pyotp  # Import pyotp
+import qrcode  # Import qrcode
+import io  # Import io for in-memory image buffers
+import base64 # In-memory buffer to base64 image
+import hashlib  # Import hashlib for hashing recovery codes
 
 # Initialize Flask application
 app = Flask(__name__)
@@ -20,17 +23,7 @@ app = Flask(__name__)
 load_dotenv()
 
 app.secret_key = os.environ.get('FLASK_SECRET_KEY') or secrets.token_hex(32)  # Load from env var or generate if not set
-#app.config['SESSION_TYPE'] = 'redis' #Comment out or remove this line
-#app.config['SESSION_REDIS'] = redis.Redis.from_url(os.environ.get("REDIS_URL")) #Comment out or remove this line
 app.config['SESSION_TYPE'] = 'filesystem' #Revert back to filesystem.
-
-# Email Configuration - VERY IMPORTANT: Configure this properly
-app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER') or 'smtp.gmail.com'  # Replace with your SMTP server
-app.config['MAIL_PORT'] = int(os.environ.get('MAIL_PORT') or 587)  # Replace with your SMTP port
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME') or 'makobisimon@gmail.com'  # Replace with your email address
-app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD') # Replace with your email password
-app.config['MAIL_FROM_ADDRESS'] = os.environ.get('MAIL_FROM_ADDRESS') or 'makobisimon@gmail.com' #Replace with your email address
 
 # MySQL Configuration
 app.config['MYSQL_HOST'] = os.environ.get("MYSQL_HOST") or 'localhost'  # Default to localhost if not set
@@ -129,6 +122,7 @@ def get_db():
             )
         except mysql.connector.Error as e:
             print(f"Error connecting to MySQL: {e}")
+            flash(f"Database Connection Error: {e}", 'error') # Flash an error message
             return None  # Return None if the connection fails
     return g.db
 
@@ -147,16 +141,29 @@ def init_db():
     cursor = db.cursor()
 
     try:
-        with open('schema.sql', 'r') as f:
-            sql_commands = f.read().split(';')
-            for command in sql_commands:
-                if command.strip():  # Execute each SQL command
-                    cursor.execute(command)
-        db.commit()  # Commit the changes
+        # SQL command to create the users table with is_active column
+        create_table_query = """
+        CREATE TABLE IF NOT EXISTS users (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            username VARCHAR(255) NOT NULL,
+            email VARCHAR(255) UNIQUE NOT NULL,
+            password VARCHAR(255) NOT NULL,
+            totp_secret VARCHAR(255),
+            recovery_codes TEXT NULL,
+            recovery_codes_generated BOOLEAN DEFAULT FALSE,
+            role VARCHAR(255) DEFAULT 'viewer',
+            is_active BOOLEAN DEFAULT TRUE,
+            reset_token VARCHAR(255) DEFAULT NULL,
+            reset_token_expiry DATETIME DEFAULT NULL
+        );
+        """
+        cursor.execute(create_table_query)
+        db.commit()
 
     except Exception as e:
         print(f"Error initializing database: {e}")
-        db.rollback()  # Rollback changes if an error occurs
+        db.rollback()
+        flash(f"Database Initialization Error: {e}", 'error')
 
     finally:
         if db.is_connected():
@@ -173,78 +180,173 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-def send_reset_email(email, token):
-    """Sends a password reset email to the user."""
-    reset_url = url_for('reset_password', token=token, _external=True)
-    subject = "Password Reset Request"
-    body = f"Please click this link to reset your password: {reset_url}"
 
-    msg = MIMEText(body, 'plain')
-    msg['Subject'] = subject
-    msg['From'] = app.config['MAIL_FROM_ADDRESS']
-    msg['To'] = email
+def generate_recovery_codes(num_codes=8):
+    """Generates a list of unique, secure recovery codes."""
+    return [secrets.token_urlsafe(16) for _ in range(num_codes)]
 
-    try:
-        with smtplib.SMTP(app.config['MAIL_SERVER'], app.config['MAIL_PORT']) as server:
-            server.starttls()
-            server.login(app.config['MAIL_USERNAME'], app.config['MAIL_PASSWORD'])
-            server.sendmail(app.config['MAIL_FROM_ADDRESS'], [email], msg.as_string())
-        print(f"Password reset email sent to {email}")
-    except Exception as e:
-        print(f"Error sending email: {e}")
-        # Handle the exception appropriately, e.g., log it, display an error message to the user
+def hash_recovery_code(code):
+    """Hashes a recovery code using SHA-256 for secure storage."""
+    return hashlib.sha256(code.encode('utf-8')).hexdigest()
 
+def verify_recovery_code(hashed_code, entered_code):
+    """Verifies if the entered recovery code matches the stored hashed code."""
+    entered_hashed_code = hashlib.sha256(entered_code.encode('utf-8')).hexdigest()
+    return hashed_code == entered_hashed_code
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
-        email = request.form['email']
+        username = request.form['username']
+        email = request.form['email'].lower()
         password = request.form['password']
 
-        # Hash the password before storing it
-        hashed_password = generate_password_hash(password)
-
-        db = get_db() #To get the database from function call and not directly because may not exist with database already setup.
+        db = get_db()
         if db is None:
-            return "Could not connect to the database."  # Error message
+            flash("Could not connect to the database.", 'error')
+            return render_template('signup.html')
         cursor = db.cursor()
 
         try:
-            cursor.execute("INSERT INTO users (email, password) VALUES (%s, %s)", (email, hashed_password))
+            cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
+            existing_user = cursor.fetchone()
+            if existing_user:
+                flash("Email address is already registered.", 'error')
+                return render_template('signup.html')
+
+            hashed_password = generate_password_hash(password)
+
+            totp_secret = pyotp.random_base32()
+            totp_uri = pyotp.TOTP(totp_secret).provisioning_uri(
+                name=email,
+                issuer_name="DeepVision"
+            )
+
+            qr = qrcode.QRCode(
+                version=1,
+                error_correction=qrcode.constants.ERROR_CORRECT_L,
+                box_size=10,
+                border=4,
+            )
+            qr.add_data(totp_uri)
+            qr.make(fit=True)
+
+            img = qr.make_image(fill_color="black", back_color="white")
+            img_buffer = io.BytesIO()
+            img.save(img_buffer, format="PNG")
+            img_buffer.seek(0)
+
+            qr_code_base64 = base64.b64encode(img_buffer.read()).decode()
+
+            recovery_codes = generate_recovery_codes()
+            hashed_recovery_codes = [hash_recovery_code(code) for code in recovery_codes]
+            hashed_recovery_codes_json = json.dumps(hashed_recovery_codes)
+
+            cursor.execute(
+                "INSERT INTO users (username, email, password, totp_secret, recovery_codes, recovery_codes_generated, is_active) "
+                "VALUES (%s, %s, %s, %s, %s, %s, TRUE)",
+                (username, email, hashed_password, totp_secret, hashed_recovery_codes_json, True)
+            )
+
             db.commit()
-            return redirect(url_for('login'))
+
+            session['recovery_codes'] = recovery_codes
+            session['qr_code'] = qr_code_base64
+
+            return redirect(url_for('recovery_codes'))
 
         except mysql.connector.Error as err:
             db.rollback()
             print(f"Error signing up: {err}")
-            return f"Error signing up: {err}"
+            flash(f"Error signing up: {err}", 'error')
+            return render_template('signup.html')
 
         finally:
             cursor.close()
-
     return render_template('signup.html')
+
+@app.route('/recovery_codes')
+def recovery_codes():
+    if 'recovery_codes' in session and 'qr_code' in session:
+        recovery_codes = session.pop('recovery_codes')
+        qr_code = session.pop('qr_code')
+        return render_template('recovery_codes.html', recovery_codes=recovery_codes, qr_code=qr_code)
+    else:
+        return redirect(url_for('signup'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        email = request.form['email']
+        email = request.form['email'].lower()
         password = request.form['password']
+        otp = request.form['otp']
+        recovery_code = request.form.get('recovery_code', '')
 
-        db = get_db()  # Get the database connection
+        db = get_db()
         if db is None:
-            return "Could not connect to the database."  # Error message
+            flash("Could not connect to the database.", 'error')
+            return render_template('login.html')
 
-        cursor = db.cursor()
-        cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
-        user = cursor.fetchone()
+        cursor = db.cursor(dictionary=True)  # Use dictionary cursor for easier column access
+        try:
+            cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
+            user = cursor.fetchone()
 
-        if user and check_password_hash(user[2], password):
-            session['email'] = email
-            return redirect(url_for('dashboard'))
-        else:
-            return "Invalid email or password"
+            if user:
+                # Simplified active status check - only check is_active column
+                if not user.get('is_active', True):  # Default to True if column doesn't exist
+                    flash("This account has been deactivated.", 'error')
+                    return render_template('login.html')
+                
+                hashed_password = user['password']
+                totp_secret = user['totp_secret']
+                hashed_recovery_codes_json = user['recovery_codes']
+                recovery_codes_generated = user['recovery_codes_generated']
+
+                if hashed_password is None:
+                    flash("Account problem, contact assistance.", 'error')
+                    return render_template('login.html')
+
+                if check_password_hash(hashed_password, password):
+                    totp = pyotp.TOTP(totp_secret)
+                    if totp.verify(otp):
+                        session['email'] = email
+                        return redirect(url_for('dashboard'))
+                    else:
+                        if recovery_codes_generated and hashed_recovery_codes_json:
+                            hashed_recovery_codes = json.loads(hashed_recovery_codes_json)
+                            for hashed_code in hashed_recovery_codes:
+                                if verify_recovery_code(hashed_code, recovery_code):
+                                    hashed_recovery_codes.remove(hashed_code)
+                                    updated_recovery_codes_json = json.dumps(hashed_recovery_codes)
+
+                                    cursor.execute(
+                                        "UPDATE users SET recovery_codes = %s, recovery_codes_generated = %s WHERE email = %s",
+                                        (updated_recovery_codes_json, False, email)
+                                    )
+                                    db.commit()
+                                    session['email'] = email
+                                    flash("Login successful using recovery code. A new set of recovery codes will be generated at next login.", 'success')
+                                    return redirect(url_for('dashboard'))
+                            flash("Invalid TOTP code or recovery code.", 'error')
+                            return render_template('login.html')
+                        else:
+                            flash("Invalid TOTP code.", 'error')
+                            return render_template('login.html')
+                else:
+                    flash("Invalid email or password.", 'error')
+                    return render_template('login.html')
+            else:
+                flash("Invalid email or password.", 'error')
+                return render_template('login.html')
+        except mysql.connector.Error as e:
+            flash(f"Database Error: {e}", 'error')
+            return render_template('login.html')
+        finally:
+            cursor.close()
 
     return render_template('login.html')
+
 
 @app.route('/logout')
 @login_required
@@ -255,30 +357,25 @@ def logout():
 @app.route('/forgot_password', methods=['GET', 'POST'])
 def forgot_password():
     if request.method == 'POST':
-        email = request.form['email']
+        email = request.form['email'].lower()
 
         db = get_db()
         if db is None:
-            return "Could not connect to the database."  # Error message
+            return "Could not connect to the database."
 
         cursor = db.cursor()
         cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
         user = cursor.fetchone()
 
         if user:
-            # Generate a unique reset token
             reset_token = str(uuid.uuid4())
-            # Set the expiry time for the token (e.g., 1 hour from now)
             reset_token_expiry = datetime.now() + timedelta(hours=1)
 
-            # Update the user's record with the reset token and expiry
             cursor.execute(
                 "UPDATE users SET reset_token = %s, reset_token_expiry = %s WHERE email = %s",
                 (reset_token, reset_token_expiry, email)
             )
             db.commit()
-            # Send the reset email
-            send_reset_email(email, reset_token)
             return "A password reset link has been sent to your email address."
         else:
             return "Invalid email address."
@@ -290,7 +387,7 @@ def forgot_password():
 def reset_password(token):
     db = get_db()
     if db is None:
-        return "Could not connect to the database."  # Error message
+        return "Could not connect to the database."
 
     cursor = db.cursor()
     cursor.execute("SELECT * FROM users WHERE reset_token = %s AND reset_token_expiry > %s", (token, datetime.now()))
@@ -304,10 +401,9 @@ def reset_password(token):
         password = request.form['password']
         hashed_password = generate_password_hash(password)
 
-        # Update the user's password and clear the reset token
         cursor.execute(
             "UPDATE users SET password = %s, reset_token = NULL, reset_token_expiry = NULL WHERE email = %s",
-            (hashed_password, user[1]) #1 is the email if the order is id/email/password
+            (hashed_password, user[2])
         )
         db.commit()
         cursor.close()
@@ -333,7 +429,7 @@ def alerts():
 
 @app.route('/events')
 @login_required
-def events_page():  # Changed function name to avoid conflict with the events list
+def events_page():
     """Render the events page"""
     return render_template('events.html', events=events)
 
@@ -354,10 +450,8 @@ def get_events():
 def add_event():
     """API endpoint to add a new event"""
     event_data = request.json
-    # Generate a new ID (in a real app, this would be handled by a database)
     new_id = max([event["id"] for event in events]) + 1 if events else 1
 
-    # Create the new event
     new_event = {
         "id": new_id,
         "time": datetime.now().strftime("%H:%M:%S"),
@@ -367,10 +461,52 @@ def add_event():
         "severity": event_data.get("severity", "normal")
     }
 
-    # Add to events list (in a real app, this would be added to a database)
     events.insert(0, new_event)
 
     return jsonify(new_event), 201
+
+@app.route('/api/cameras', methods=['GET'])
+@login_required
+def get_cameras():
+    """API endpoint to get all cameras"""
+    return jsonify(cameras)  # Uses the dummy cameras data defined earlier
+
+@app.route('/api/camera/<int:camera_id>/feed', methods=['GET'])
+@login_required
+def get_camera_feed(camera_id):
+    """Endpoint to get camera feed (simulated)"""
+    camera = next((c for c in cameras if c["id"] == camera_id), None)
+    if not camera:
+        return jsonify({"error": "Camera not found"}), 404
+    
+    # In a real implementation, this would return the actual camera feed
+    return jsonify({
+        "id": camera_id,
+        "status": "live" if camera["status"] == "online" else "offline",
+        "stream_url": f"/stream/{camera_id}"  # Placeholder for actual stream
+    })
+
+@app.route('/api/camera/<int:camera_id>/snapshot', methods=['POST'])
+@login_required
+def capture_snapshot(camera_id):
+    """Endpoint to capture snapshot"""
+    # In a real implementation, this would capture and save a snapshot
+    return jsonify({
+        "status": "success",
+        "message": f"Snapshot captured for camera {camera_id}",
+        "image_url": f"/snapshots/{camera_id}/{datetime.now().timestamp()}.jpg"
+    })
+
+@app.route('/api/camera/<int:camera_id>/record', methods=['POST'])
+@login_required
+def start_recording(camera_id):
+    """Endpoint to start/stop recording"""
+    # In a real implementation, this would control recording
+    return jsonify({
+        "status": "success",
+        "message": f"Recording toggled for camera {camera_id}",
+        "recording": True  # Would toggle based on current state
+    })
 
 @app.route('/api/status', methods=['GET'])
 @login_required
@@ -395,7 +531,6 @@ def set_camera_alert(camera_id):
     """API endpoint to set an alert on a camera"""
     alert_data = request.json
 
-    # Find the camera with the given ID
     for camera in cameras:
         if camera["id"] == camera_id:
             camera["alert"] = alert_data.get("alert")
@@ -408,23 +543,20 @@ def set_camera_alert(camera_id):
 def settings():
     """Render the settings page and handle settings updates."""
     if request.method == 'POST':
-        # Get the data from the submitted form
         new_system_name = request.form.get('systemName')
         new_timezone = request.form.get('timezone')
         new_camera_resolution = request.form.get('cameraResolution')
         new_alert_volume = int(request.form.get('alertVolume'))
         new_theme = request.form.get('theme')
 
-        # Update the settings.  In a real app, you'd save these to a database or config file.
         session['systemName'] = new_system_name
         session['timezone'] = new_timezone
         session['cameraResolution'] = new_camera_resolution
         session['alertVolume'] = new_alert_volume
         session['theme'] = new_theme
 
-        return redirect(url_for('settings'))  # Redirect to refresh the page
+        return redirect(url_for('settings'))
 
-    # Get the current settings. If they don't exist in the session, use the defaults.
     current_settings = {
         'systemName': session.get('systemName', default_settings['systemName']),
         'timezone': session.get('timezone', default_settings['timezone']),
@@ -441,36 +573,154 @@ def settings():
 def user_management():
     db = get_db()
     if db is None:
-        return "Could not connect to the database."  # Error message
+        return "Could not connect to the database."
+
     cursor = db.cursor()
-    cursor.execute("SELECT id, email, password FROM users")
+    cursor.execute("SELECT id, username, email, role, is_active FROM users")  # Added username to the query
     users = cursor.fetchall()
     cursor.close()
 
-    # Convert to list of dictionaries for easier template rendering
     users_list = []
     for user in users:
-        # You might want to fetch role information from another table based on user ID
-        role = "viewer"  # Default role, adjust as needed
-        users_list.append({"id": user[0], "email": user[1],  "role": role}) #password column removed
+        users_list.append({
+            "id": user[0],
+            "username": user[1],  # Added username
+            "email": user[2],
+            "role": user[3],
+            "is_active": bool(user[4])
+        })
 
     return render_template('user_management.html', users=users_list)
-
-
-@app.route('/create_user')
+@app.route('/create_user', methods=['GET', 'POST'])
 @login_required
 def create_user():
-    return "This URL will be reponsible for the user creation"
+    if request.method == 'POST':
+        email = request.form['email'].lower()
+        password = request.form['password']
+        role = request.form['role']
+        username = request.form['username']
 
-@app.route('/edit_user/<user_id>')
+        db = get_db()
+        if db is None:
+            flash("Could not connect to the database.", 'error')
+            return render_template('create_user.html')
+
+        cursor = db.cursor()
+
+        try:
+            cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
+            existing_user = cursor.fetchone()
+            if existing_user:
+                flash("Email address is already registered.", 'error')
+                return render_template('create_user.html')
+
+            hashed_password = generate_password_hash(password)
+
+            cursor.execute(
+                "INSERT INTO users (username, email, password, role, is_active) VALUES (%s, %s, %s, %s, TRUE)",
+                (username, email, hashed_password, role)
+            )
+            db.commit()
+            flash("User created successfully!", 'success')
+            return redirect(url_for('user_management'))
+
+        except mysql.connector.Error as err:
+            db.rollback()
+            print(f"Error creating user: {err}")
+            flash(f"Error creating user: {err}", 'error')
+            return render_template('create_user.html')
+
+        finally:
+            cursor.close()
+
+    return render_template('create_user.html')
+
+@app.route('/edit_user/<int:user_id>', methods=['GET', 'POST'])
 @login_required
 def edit_user(user_id):
-    return f"This URL will be reponsible for editing {user_id}"
+    db = get_db()
+    if db is None:
+        return "Could not connect to the database."
 
-@app.route('/deactivate_user/<user_id>')
+    cursor = db.cursor()
+
+    if request.method == 'POST':
+        username = request.form['username']
+        role = request.form['role']
+        email = request.form['email']
+
+        try:
+            cursor.execute(
+                "UPDATE users SET username = %s, role = %s, email = %s WHERE id = %s",
+                (username, role, email, user_id)
+            )
+            db.commit()
+            flash("User updated successfully!", 'success')
+            return redirect(url_for('user_management'))
+        except mysql.connector.Error as err:
+            db.rollback()
+            flash(f"Error updating user: {err}", 'error')
+
+    cursor.execute("SELECT id, username, email, role, is_active FROM users WHERE id = %s", (user_id,))
+    user = cursor.fetchone()
+    cursor.close()
+
+    if user:
+        user_data = {
+            "id": user[0],
+            "username": user[1],
+            "email": user[2],
+            "role": user[3],
+            "is_active": bool(user[4])
+        }
+        return render_template('edit_user.html', user=user_data)
+    else:
+        return "User not found."
+
+@app.route('/deactivate_user/<int:user_id>')
 @login_required
 def deactivate_user(user_id):
-    return f"This URL will be reponsible for deactivating {user_id}"
+    db = get_db()
+    if db is None:
+        flash("Could not connect to the database.", 'error')
+        return redirect(url_for('user_management'))
+
+    cursor = db.cursor()
+
+    try:
+        cursor.execute("UPDATE users SET is_active = FALSE WHERE id = %s", (user_id,))
+        db.commit()
+        flash("User deactivated successfully!", 'success')
+    except mysql.connector.Error as err:
+        db.rollback()
+        flash(f"Error deactivating user: {err}", 'error')
+    finally:
+        cursor.close()
+
+    return redirect(url_for('user_management'))
+
+@app.route('/reactivate_user/<int:user_id>')
+@login_required
+def reactivate_user(user_id):
+    db = get_db()
+    if db is None:
+        flash("Could not connect to the database.", 'error')
+        return redirect(url_for('user_management'))
+
+    cursor = db.cursor()
+
+    try:
+        cursor.execute("UPDATE users SET is_active = TRUE WHERE id = %s", (user_id,))
+        db.commit()
+        flash("User reactivated successfully!", 'success')
+    except mysql.connector.Error as err:
+        db.rollback()
+        flash(f"Error reactivating user: {err}", 'error')
+    finally:
+        cursor.close()
+
+    return redirect(url_for('user_management'))
+
 @app.route('/system_status')
 @login_required
 def system_status():
@@ -492,7 +742,6 @@ if __name__ == '__main__':
     # Create a placeholder image if it doesn't exist
     placeholder_path = 'static/images/placeholder.jpg'
     if not os.path.exists(placeholder_path):
-        # This would create a blank image - in a real app, you'd want to provide an actual placeholder
         with open(placeholder_path, 'w') as f:
             f.write('placeholder')
 
