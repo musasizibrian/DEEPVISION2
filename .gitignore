@@ -1,14 +1,37 @@
-# Ignore video and model files
+# --- Virtual Environment ---
+venv/
+**/venv/ # More explicit version for nested venv directories
+
+# --- Secrets ---
+*.env
+.env
+
+# --- Data and Models ---
 *.avi
 *.mp4
-*.pth
-*.env
+*.pt   # PyTorch model files
+*.pth  # PyTorch model files
+*.onnx # ONNX model files
+*.weights # Other model weight formats
+/runs/ # Default output directory for Ultralytics training/results
 
-# VS Code and Python cache
-.vscode/
-_pycache_/
+# --- Python Cache and Compiled Files ---
+__pycache__/
 *.pyc
+*.pyo
+*.pyd  # Ignore compiled Python extensions
+*.dll  # Ignore Windows dynamic libraries
+*.lib  # Ignore static library files
 
-# OS junk
+# --- IDE / Editor Specific ---
+.vscode/
+.idea/  # IntelliJ/PyCharm
+
+# --- OS Specific Junk ---
 .DS_Store
 Thumbs.db
+
+# --- Build Artifacts / Distribution ---
+build/
+dist/
+*.egg-info/
