@@ -297,7 +297,7 @@ def login():
                 if not user.get('is_active', True):  # Default to True if column doesn't exist
                     flash("This account has been deactivated.", 'error')
                     return render_template('login.html')
-                
+
                 hashed_password = user['password']
                 totp_secret = user['totp_secret']
                 hashed_recovery_codes_json = user['recovery_codes']
@@ -435,7 +435,7 @@ def events_page():
 
 @app.route('/reports')
 @login_required
-def reports():
+def reports_page(): # Renamed function to avoid conflict if you ever use 'reports' for the variable
     """Render the reports page"""
     return render_template('reports.html', reports=reports)
 
@@ -478,7 +478,7 @@ def get_camera_feed(camera_id):
     camera = next((c for c in cameras if c["id"] == camera_id), None)
     if not camera:
         return jsonify({"error": "Camera not found"}), 404
-    
+
     # In a real implementation, this would return the actual camera feed
     return jsonify({
         "id": camera_id,
@@ -512,17 +512,19 @@ def start_recording(camera_id):
 @login_required
 def get_status():
     """API endpoint to get system status"""
+    # This currently returns events, might need adjustment based on desired status info
     return jsonify(events)
 
-@app.route('/api/cameras', methods=['GET'])
-@login_required
-def get_cameras():
-    """API endpoint to get all cameras"""
-    return jsonify(cameras)
+# REMOVED Duplicate route definition that caused the error
+# @app.route('/api/cameras', methods=['GET'])
+# @login_required
+# def get_cameras():
+#     """API endpoint to get all cameras"""
+#     return jsonify(cameras)
 
 @app.route('/cameras')
 @login_required
-def cameras():
+def cameras_page(): # Renamed function to avoid conflict if you ever use 'cameras' for the variable
     return render_template('all_cameras.html')
 
 @app.route('/api/cameras/<int:camera_id>/alert', methods=['POST'])
