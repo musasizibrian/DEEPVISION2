@@ -387,6 +387,23 @@
          #fullscreenCanvas {
              display: none; /* Canvas hidden by default */
          }
+        /* Style for error message overlay in modal */
+        .modal-error-message {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--warning);
+            background-color: rgba(0, 0, 0, 0.7); /* Slightly transparent black */
+            padding: 1rem;
+            text-align: center;
+            font-size: 0.9em;
+            z-index: 10; /* Ensure it's above the video element */
+        }
     </style>
 </head>
 <body>
@@ -407,7 +424,8 @@
       </div>
       <div class="user-controls">
         <!-- Link styled as a button -->
-        <a href="{{ url_for('logout') }}" class="btn-primary">Logout</a>
+        <!-- Placeholder for logout link/button -->
+        <a href="#" class="btn-primary" onclick="alert('Logout clicked (placeholder)')">Logout</a>
       </div>
     </header>
 
@@ -416,34 +434,34 @@
         <ul class="nav-list">
              <!-- Dashboard Link -->
             <li class="nav-item">
-                <a href="{{ url_for('dashboard') }}" class="nav-link">
+                <a href="#" class="nav-link" onclick="alert('Dashboard clicked (placeholder)')">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
                     Dashboard
                 </a>
             </li>
              <!-- All Cameras Link (Active) -->
             <li class="nav-item">
-                <a href="{{ url_for('cameras_page') }}" class="nav-link active">                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg>
+                <a href="#" class="nav-link active">                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg>
                     All Cameras
                 </a>
             </li>
              <!-- Alerts Link -->
             <li class="nav-item">
-                <a href="{{ url_for('alerts') }}" class="nav-link">
+                <a href="#" class="nav-link" onclick="alert('Alerts clicked (placeholder)')">
                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                     Alerts
                 </a>
             </li>
              <!-- Events Link -->
             <li class="nav-item">
-                <a href="{{ url_for('events_page') }}" class="nav-link">
+                <a href="#" class="nav-link" onclick="alert('Events clicked (placeholder)')">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
                     Events
                 </a>
             </li>
              <!-- Reports Link -->
              <li class="nav-item">
-                <a href="{{ url_for('reports_page') }}" class="nav-link">                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                <a href="#" class="nav-link" onclick="alert('Reports clicked (placeholder)')">                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                     Reports
                 </a>
             </li>
@@ -453,21 +471,21 @@
       <ul class="nav-list">
          <!-- Settings Link -->
         <li class="nav-item">
-          <a href="{{ url_for('settings') }}" class="nav-link">
+          <a href="#" class="nav-link" onclick="alert('Settings clicked (placeholder)')">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
             Settings
           </a>
         </li>
          <!-- User Management Link -->
         <li class="nav-item">
-          <a href="{{ url_for('user_management') }}" class="nav-link">
+          <a href="#" class="nav-link" onclick="alert('User Management clicked (placeholder)')">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
             User Management
           </a>
         </li>
          <!-- System Status Link -->
         <li class="nav-item">
-          <a href="{{ url_for('system_status') }}" class="nav-link">
+          <a href="#" class="nav-link" onclick="alert('System Status clicked (placeholder)')">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
             System Status
           </a>
@@ -484,11 +502,11 @@
                 <input type="text" id="cameraSearch" placeholder="Search cameras...">
             </div>
             <div class="filter-buttons">
-                <!-- Counts will be updated by JS if needed, initial values are placeholders -->
-                <button class="filter-btn active" data-filter="all">All (8)</button>
-                <button class="filter-btn" data-filter="live">Live (6)</button>
-                <button class="filter-btn" data-filter="offline">Offline (2)</button>
-                <button class="filter-btn" data-filter="alert">Alerts (1)</button>
+                <!-- Counts will be updated by JS -->
+                <button class="filter-btn active" data-filter="all">All (0)</button>
+                <button class="filter-btn" data-filter="live">Live (0)</button>
+                <button class="filter-btn" data-filter="offline">Offline (0)</button>
+                <button class="filter-btn" data-filter="alert">Alerts (0)</button>
             </div>
         </div>
 
@@ -506,8 +524,10 @@
         <div class="fullscreen-feed">
              <!-- Video element for the modal -->
             <video id="fullscreenVideo" autoplay playsinline muted></video>
-            <!-- Canvas for snapshots -->
+            <!-- Canvas for snapshots (hidden) -->
             <canvas id="fullscreenCanvas"></canvas>
+            <!-- Placeholder for error messages -->
+            <div class="modal-error-placeholder"></div>
         </div>
         <div class="modal-controls">
             <button class="modal-btn primary" onclick="takeSnapshot()">📸 Snapshot</button>
@@ -523,7 +543,7 @@
 </div>
 
 <script>
-    // --- JavaScript from File 2 (with minor adjustments) ---
+    // --- JavaScript ---
 
     // Static Camera data (Replace with dynamic data from Flask/API later)
     const cameras = [
@@ -547,7 +567,7 @@
     const recordBtn = document.getElementById('recordBtn');
     const videoSourceSelect = document.getElementById('videoSource');
     const cameraSelectorContainer = document.getElementById('cameraSelectorContainer');
-
+    const modalErrorPlaceholder = document.querySelector('.modal-error-placeholder'); // For displaying errors
 
     // State variables
     let currentCamera = null;
@@ -588,7 +608,6 @@
              let feedContent = '';
              if (camera.status === 'live') {
                  feedContent += `<div class="live-indicator">LIVE</div>`;
-                 // Placeholder for actual IP camera feed visualization later
                  if (camera.type !== 'webcam') {
                      feedContent += `<span style="font-size: 0.8em;">(IP Camera Feed)</span>`;
                  }
@@ -599,17 +618,17 @@
                  feedContent += `<div class="suspicious-activity">Suspicious Activity</div>`;
              }
 
-
             card.innerHTML = `
                 <div class="camera-feed">
                     ${feedContent}
+                     ${camera.type === 'webcam' && camera.status === 'live' ? '<span style="font-size: 0.8em;">(Webcam Available)</span>' : ''}
                 </div>
                 <div class="camera-info">
                     <div class="camera-title">${camera.title}</div>
                     <div class="camera-location">${camera.location}</div>
                 </div>
                 <div class="camera-controls">
-                     <!-- Only show View button for live cameras for now -->
+                     <!-- Only show View button for live cameras -->
                     ${camera.status === 'live' ? `<button class="control-btn" onclick="viewCamera(${camera.id})">👁️ View</button>` : '<span style="font-size:0.8em; color: var(--gray); padding: 0.5rem;">Unavailable</span>'}
                     <button class="control-btn" onclick="editCamera(${camera.id})">📝 Edit</button>
                     <button class="control-btn" onclick="showStats(${camera.id})">📊 Stats</button>
@@ -675,7 +694,8 @@
 
         // Camera selection change
         videoSourceSelect.addEventListener('change', () => {
-             if (currentCamera && currentCamera.type === 'webcam') {
+             // Only restart stream if it's a webcam currently being viewed
+             if (currentCamera && currentCamera.type === 'webcam' && mediaStream) {
                  startWebcamStream(videoSourceSelect.value);
              }
         });
@@ -683,6 +703,28 @@
 
 
     // --- Modal and Webcam Logic ---
+
+     // Function to display errors within the modal video area
+     function showModalError(message) {
+         fullscreenVideo.srcObject = null; // Ensure no stream is playing
+         fullscreenVideo.style.display = 'none'; // Hide video element
+         const errorDiv = document.createElement('div');
+         errorDiv.classList.add('modal-error-message'); // Add class for styling/removal
+         errorDiv.textContent = message;
+         // Clear previous errors before adding new one
+         clearModalError();
+         modalErrorPlaceholder.appendChild(errorDiv); // Add to the placeholder div
+     }
+
+     // Clear modal errors
+     function clearModalError() {
+         const existingError = modalErrorPlaceholder.querySelector('.modal-error-message');
+         if (existingError) {
+            existingError.remove();
+         }
+          fullscreenVideo.style.display = 'block'; // Show video element again
+     }
+
 
     // View Camera Function (Handles both webcam and placeholder for IP cam)
     async function viewCamera(cameraId) {
@@ -693,35 +735,39 @@
          }
 
         console.log("Viewing camera:", currentCamera.title);
+        clearModalError(); // Clear any previous errors
         cameraModal.style.display = 'block';
         document.body.style.overflow = 'hidden'; // Prevent background scrolling
 
         // Reset modal state
         fullscreenVideo.srcObject = null;
-        fullscreenVideo.poster = ''; // Clear any previous poster image
         cameraSelectorContainer.style.display = 'none';
         videoSourceSelect.innerHTML = ''; // Clear previous options
+        availableDevices = []; // Reset device list
 
         if (currentCamera.type === 'webcam') {
             // Handle Webcam
             try {
-                // Get available video devices first (need temporary grant)
-                await navigator.mediaDevices.getUserMedia({ video: true, audio: false }); // Request temporary access
+                // 1. Request temporary access to trigger permission prompt if needed
+                // We don't store this stream, just use it to ensure permissions are okay before enumerating
+                await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+
+                // 2. Enumerate devices
                 const devices = await navigator.mediaDevices.enumerateDevices();
                 availableDevices = devices.filter(device => device.kind === 'videoinput');
                 console.log("Available video devices:", availableDevices);
 
-                // Populate camera selector dropdown
+                // 3. Populate camera selector dropdown
                 if (availableDevices.length > 0) {
                      availableDevices.forEach((device, i) => {
                          const option = document.createElement('option');
                          option.value = device.deviceId;
-                         option.text = device.label || `Camera ${i + 1}`;
+                         // Use label if available, otherwise generate a name
+                         option.text = device.label || `Camera ${i + 1} (${device.deviceId.substring(0, 6)}...)`;
                          videoSourceSelect.appendChild(option);
                      });
-                     // Show selector only if more than one camera or if needed
-                     cameraSelectorContainer.style.display = 'block';
-                     // Start with the first available camera
+                     cameraSelectorContainer.style.display = 'block'; // Show the dropdown
+                     // 4. Start stream with the first available camera
                      startWebcamStream(availableDevices[0].deviceId);
                 } else {
                      console.error("No video input devices found.");
@@ -730,36 +776,23 @@
 
             } catch (err) {
                 console.error('Error accessing or enumerating devices:', err);
-                showModalError(`Could not access webcam. Please ensure permissions are granted. Error: ${err.name}`);
+                let errorMsg = `Could not access webcam. Please ensure permissions are granted in your browser settings.`;
+                if (err.name === 'NotAllowedError') {
+                    errorMsg = 'Webcam access was denied. Please grant permission in your browser settings.';
+                } else if (err.name === 'NotFoundError') {
+                     errorMsg = 'No webcam device was found.';
+                 } else {
+                    errorMsg += ` Error: ${err.name}`;
+                 }
+                 showModalError(errorMsg);
             }
         } else {
             // Handle IP Camera (Placeholder)
              console.log("Displaying placeholder for IP Camera:", currentCamera.title);
-             showModalError(`Live feed for IP Camera (${currentCamera.title}) is not implemented yet.`);
-             // Hide webcam specific controls maybe?
-             cameraSelectorContainer.style.display = 'none';
+             showModalError(`Live feed for IP Camera '${currentCamera.title}' is not yet implemented.`);
+             cameraSelectorContainer.style.display = 'none'; // Hide webcam selector
         }
     }
-
-     // Function to display errors within the modal video area
-     function showModalError(message) {
-         fullscreenVideo.srcObject = null; // Ensure no stream is playing
-         // Create a message element instead of using poster
-         const errorDiv = document.createElement('div');
-         errorDiv.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--warning); background-color: black; padding: 1rem; text-align: center; font-size: 0.9em;';
-         errorDiv.textContent = message;
-         // Clear previous errors before adding new one
-         const existingError = fullscreenVideo.parentNode.querySelector('.modal-error-message');
-         if (existingError) existingError.remove();
-         errorDiv.classList.add('modal-error-message'); // Add class for potential removal
-         fullscreenVideo.parentNode.appendChild(errorDiv);
-     }
-
-      // Clear modal errors
-      function clearModalError() {
-          const existingError = fullscreenVideo.parentNode.querySelector('.modal-error-message');
-          if (existingError) existingError.remove();
-      }
 
 
     // Start webcam stream specifically
@@ -768,12 +801,13 @@
         if (mediaStream) {
             mediaStream.getTracks().forEach(track => track.stop());
             console.log("Stopped previous media stream.");
+            mediaStream = null; // Reset stream variable
         }
         clearModalError(); // Clear any previous errors
 
         const constraints = {
             video: {
-                deviceId: deviceId ? { exact: deviceId } : undefined,
+                deviceId: deviceId ? { exact: deviceId } : undefined, // Use specific device if ID provided
                 width: { ideal: 1280 }, // Request preferred resolution
                 height: { ideal: 720 }
             },
@@ -784,22 +818,36 @@
 
         try {
             mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
-            console.log("Webcam stream obtained.");
+            console.log("Webcam stream obtained successfully.");
             fullscreenVideo.srcObject = mediaStream;
-            fullscreenVideo.muted = true; // Ensure muted for autoplay
-            fullscreenVideo.play().catch(e => console.error("Play error:", e)); // Explicit play just in case
+            fullscreenVideo.muted = true; // Mute to allow autoplay
+            // Ensure video plays - some browsers might need this explicit call
+            await fullscreenVideo.play();
+            console.log("Video playback started.");
 
         } catch (err) {
-            console.error('Error starting specific webcam stream:', err);
+            console.error(`Error starting webcam stream (Device ID: ${deviceId}):`, err);
             fullscreenVideo.srcObject = null;
-            showModalError(`Failed to start selected camera. Error: ${err.name}`);
+            let errorMsg = `Failed to start selected camera.`;
+            if (err.name === 'OverconstrainedError') {
+                 errorMsg = `The requested resolution may not be supported by the camera. Trying default constraints.`;
+                 // Optional: Try again with default constraints (no specific deviceId or resolution)
+                 // delete constraints.video.deviceId; delete constraints.video.width; delete constraints.video.height;
+                 // try { mediaStream = await ... } catch { ... }
+             } else if (err.name === 'NotReadableError') {
+                 errorMsg = `The camera might be in use by another application or experiencing a hardware issue.`;
+             } else {
+                 errorMsg += ` Error: ${err.name}`;
+             }
+             showModalError(errorMsg);
+             mediaStream = null; // Ensure stream is null on error
         }
     }
 
     // Take snapshot
     function takeSnapshot() {
-        if (!mediaStream || currentCamera.type !== 'webcam') {
-             alert("Snapshot only available for active webcam streams.");
+        if (!mediaStream || !fullscreenVideo.srcObject || currentCamera?.type !== 'webcam') {
+             alert("Snapshot is only available for active webcam streams.");
              return;
          }
 
@@ -807,48 +855,68 @@
         const canvas = fullscreenCanvas;
         const context = canvas.getContext('2d');
 
-        // Set canvas dimensions to video dimensions
+        // Set canvas dimensions to match the video's intrinsic size
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
 
-        // Draw video frame onto canvas
+        // Draw the current video frame onto the hidden canvas
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-        // Create download link
+        // Create a download link
         const link = document.createElement('a');
-        link.download = `snapshot-${currentCamera.title.replace(/\s+/g, '_')}-${new Date().toISOString().split('T')[0]}.png`;
+        const timestamp = new Date().toISOString().replace(/[:.-]/g, '').slice(0, 15); // YYYYMMDDTHHMMSS
+        link.download = `snapshot_${currentCamera.title.replace(/\s+/g, '_')}_${timestamp}.png`;
         try {
-            link.href = canvas.toDataURL('image/png'); // Get data URL
-            link.click(); // Trigger download
+            // Convert canvas content to a PNG data URL
+            link.href = canvas.toDataURL('image/png');
+            // Programmatically click the link to trigger the download
+            link.click();
+            console.log("Snapshot taken and download triggered.");
         } catch (e) {
-            console.error("Error creating snapshot data URL:", e);
-            alert("Failed to create snapshot.");
+            console.error("Error creating snapshot data URL or triggering download:", e);
+            alert("Failed to create or download snapshot.");
         }
     }
 
     // Toggle video recording
     function toggleRecording() {
-         if (!mediaStream || currentCamera.type !== 'webcam') {
-             alert("Recording only available for active webcam streams.");
+         if (!mediaStream || !fullscreenVideo.srcObject || currentCamera?.type !== 'webcam') {
+             alert("Recording is only available for active webcam streams.");
              return;
          }
 
         if (!isRecording) {
             // Start recording
-            recordedChunks = [];
-            try {
-                // Check for supported MIME type
-                 const options = { mimeType: 'video/webm;codecs=vp8' };
+            recordedChunks = []; // Clear previous chunks
+            let options = { mimeType: 'video/webm;codecs=vp9' }; // Prefer VP9
+
+            if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+                 console.warn(`${options.mimeType} not supported, trying vp8.`);
+                 options = { mimeType: 'video/webm;codecs=vp8' };
                  if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-                     console.warn(`${options.mimeType} not supported, trying default.`);
-                     delete options.mimeType; // Use browser default
+                    console.warn(`${options.mimeType} not supported, trying default.`);
+                    options = { mimeType: 'video/webm' }; // Basic webm
+                    if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+                        console.warn(`${options.mimeType} not supported, trying mp4.`);
+                        options = { mimeType: 'video/mp4' }; // Try mp4 as a last resort (less likely to be supported for recording)
+                         if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+                             console.error("No supported recording format found!");
+                             alert("Your browser doesn't support common video recording formats (WebM/MP4).");
+                             return;
+                         }
+                    }
                  }
+            }
+             console.log("Using recording options:", options);
+
+
+            try {
                 mediaRecorder = new MediaRecorder(mediaStream, options);
 
-                mediaRecorder.ondataavailable = function(e) {
-                    if (e.data.size > 0) {
-                        recordedChunks.push(e.data);
-                        console.log(`Recorded chunk size: ${e.data.size}`);
+                mediaRecorder.ondataavailable = function(event) {
+                    if (event.data.size > 0) {
+                        recordedChunks.push(event.data);
+                        // console.log(`Recorded chunk size: ${event.data.size}`);
                     }
                 };
 
@@ -856,37 +924,43 @@
                     console.log("Recording stopped. Processing chunks:", recordedChunks.length);
                     if (recordedChunks.length === 0) {
                         console.warn("No data recorded.");
-                        alert("Recording failed or produced no data.");
+                        // Don't alert here, might be intentional short recording
+                        // Reset button state only after processing or if error
+                        isRecording = false; // Ensure state reset even if no data
+                        recordBtn.textContent = '⏺️ Record';
+                        recordBtn.classList.remove('danger');
                         return;
                     }
-                    const blob = new Blob(recordedChunks, { type: mediaRecorder.mimeType || 'video/webm' }); // Use the actual mimeType if available
+                    const blob = new Blob(recordedChunks, { type: mediaRecorder.mimeType });
                     const url = URL.createObjectURL(blob);
 
                     const link = document.createElement('a');
-                    const fileExtension = (mediaRecorder.mimeType && mediaRecorder.mimeType.includes('mp4')) ? 'mp4' : 'webm';
-                    link.download = `recording-${currentCamera.title.replace(/\s+/g, '_')}-${new Date().toISOString().split('T')[0]}.${fileExtension}`;
+                    const fileExtension = mediaRecorder.mimeType.includes('mp4') ? 'mp4' : 'webm';
+                    const timestamp = new Date().toISOString().replace(/[:.-]/g, '').slice(0, 15);
+                    link.download = `recording_${currentCamera.title.replace(/\s+/g, '_')}_${timestamp}.${fileExtension}`;
                     link.href = url;
                     link.click();
 
-                    // Clean up the object URL after download is triggered
+                    // Clean up the object URL after download is triggered (give it a moment)
                     window.setTimeout(() => URL.revokeObjectURL(url), 100);
 
                     // Reset button state after processing
                     isRecording = false;
                     recordBtn.textContent = '⏺️ Record';
                     recordBtn.classList.remove('danger');
+                    console.log("Recording download triggered.");
                 };
 
                  mediaRecorder.onerror = (event) => {
                     console.error('MediaRecorder error:', event.error);
-                    alert(`Recording error: ${event.error.name}`);
+                    alert(`Recording error: ${event.error.name || 'Unknown error'}`);
                      // Reset button state on error
                      isRecording = false;
                      recordBtn.textContent = '⏺️ Record';
                      recordBtn.classList.remove('danger');
                  };
 
-                mediaRecorder.start(1000); // Record in chunks of 1 second
+                mediaRecorder.start(1000); // Record in chunks (e.g., every second)
                 isRecording = true;
                 recordBtn.textContent = '⏹️ Stop Recording';
                 recordBtn.classList.add('danger');
@@ -894,37 +968,44 @@
 
             } catch (e) {
                 console.error("Error initializing MediaRecorder:", e);
-                alert("Could not start recording. Check browser compatibility or permissions.");
+                alert(`Could not start recording: ${e.name || 'Unknown error'}. Check browser compatibility or permissions.`);
                  isRecording = false; // Ensure state is reset
+                 recordBtn.textContent = '⏺️ Record';
+                 recordBtn.classList.remove('danger');
             }
 
         } else {
             // Stop recording
-            if (mediaRecorder && mediaRecorder.state !== "inactive") {
+            if (mediaRecorder && mediaRecorder.state === "recording") {
                  mediaRecorder.stop();
                  // The actual download happens in the onstop handler
                  console.log("Stop recording requested.");
+                 // Button state reset is handled in onstop
             } else {
-                 // Failsafe reset if recorder state is weird
+                 console.warn("MediaRecorder was not active or already stopping when stop was called.");
+                 // Failsafe reset if state is weird
                  isRecording = false;
                  recordBtn.textContent = '⏺️ Record';
                  recordBtn.classList.remove('danger');
-                 console.warn("MediaRecorder was not active when stop was called.");
             }
         }
     }
 
-    // Toggle fullscreen mode for the video element
+    // Toggle fullscreen mode for the video element's container
     function toggleFullscreen() {
-        const videoContainer = fullscreenVideo.parentNode; // Target the container for better control
+        const videoContainer = fullscreenVideo.parentElement; // Target the '.fullscreen-feed' div
 
         if (!document.fullscreenElement) {
             // Enter fullscreen
              if (videoContainer.requestFullscreen) {
                  videoContainer.requestFullscreen().catch(err => {
                      console.error(`Error attempting to enable fullscreen: ${err.message} (${err.name})`);
-                     alert(`Fullscreen mode failed: ${err.message}`);
+                     alert(`Could not enter fullscreen mode: ${err.message}`);
                  });
+             } else if (videoContainer.webkitRequestFullscreen) { /* Safari */
+                videoContainer.webkitRequestFullscreen();
+             } else if (videoContainer.msRequestFullscreen) { /* IE11 */
+                videoContainer.msRequestFullscreen();
              } else {
                  alert("Fullscreen mode is not supported by your browser.");
              }
@@ -932,6 +1013,10 @@
             // Exit fullscreen
             if (document.exitFullscreen) {
                 document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) { /* Safari */
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) { /* IE11 */
+                document.msExitFullscreen();
             }
         }
     }
@@ -940,35 +1025,40 @@
     function closeModal() {
         cameraModal.style.display = 'none';
         document.body.style.overflow = 'auto'; // Restore background scrolling
-        clearModalError(); // Clear any errors
+        clearModalError(); // Clear any lingering errors
 
         // Stop recording if active
-        if (isRecording && mediaRecorder && mediaRecorder.state !== "inactive") {
+        if (isRecording && mediaRecorder && mediaRecorder.state === "recording") {
             try {
-                 mediaRecorder.stop(); // Stop recording cleanly
+                 mediaRecorder.stop(); // Trigger onstop handler for download
                  console.log("Stopped recording on modal close.");
             } catch (e) {
                 console.error("Error stopping recorder on close:", e);
             }
         }
-         // Reset recording button state regardless
+         // Reset recording button state immediately, as onstop might be async
          isRecording = false;
          recordBtn.textContent = '⏺️ Record';
          recordBtn.classList.remove('danger');
+         mediaRecorder = null; // Clear recorder instance
 
 
-        // Stop all media tracks
+        // Stop all media tracks IF a stream exists
         if (mediaStream) {
             mediaStream.getTracks().forEach(track => track.stop());
-            mediaStream = null;
             console.log("Media stream stopped on modal close.");
         }
 
-        // Reset state
-        fullscreenVideo.srcObject = null;
+        // Reset state variables
+        fullscreenVideo.srcObject = null; // Crucial to release camera
+        mediaStream = null;
         currentCamera = null;
         availableDevices = [];
         recordedChunks = [];
+        videoSourceSelect.innerHTML = ''; // Clear dropdown
+        cameraSelectorContainer.style.display = 'none'; // Hide dropdown
+
+        console.log("Modal closed and resources released.");
     }
 
     // --- Placeholder Functions ---
@@ -976,14 +1066,14 @@
     function editCamera(cameraId) {
         const camera = cameras.find(c => c.id === cameraId);
         if (!camera) return;
-        alert(`Editing ${camera.title}\n(Placeholder - Opens an edit form)`);
+        alert(`Editing ${camera.title}\n(Placeholder - Functionality not implemented)`);
         // In a real app, you'd likely open another modal or navigate to an edit page
     }
 
     function showStats(cameraId) {
         const camera = cameras.find(c => c.id === cameraId);
         if (!camera) return;
-        alert(`Showing stats for ${camera.title}\n(Placeholder - Displays detailed statistics)`);
+        alert(`Showing stats for ${camera.title}\n(Placeholder - Functionality not implemented)`);
         // In a real app, you might show charts in a modal or a dedicated stats section
     }
 
